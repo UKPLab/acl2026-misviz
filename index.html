@@ -61,7 +61,7 @@
         </a>
         <div class="navbar-dropdown">
           <a class="navbar-item" href="https://ukplab.github.io/arxiv2025-misleading-visualizations/">
-            MLLMs and misleading visualizations
+            Countering misleading charts
           </a>
         <a class="navbar-item" href="https://ukplab.github.io/M4FC/">
             M4FC
@@ -185,7 +185,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Misleading visualizations are a potent driver of misinformation on social media and the web. By violating chart design principles, they distort data and lead readers to draw inaccurate conclusions. Prior work has shown that both humans and multimodal large language models (MLLMs) are frequently deceived by such visualizations. Automatically detecting misleading visualizations and identifying the specific design rules they violate could help protect readers and reduce the spread of misinformation. However, the training and evaluation of AI models has been limited by the absence of large, diverse, and openly available datasets. In this work, we introduce Misviz, a benchmark of 2,604 real-world visualizations annotated with 12 types of misleaders. To support model training, we also release Misviz-synth, a synthetic dataset of 81,814 visualizations generated using Matplotlib and based on real-world data tables. We perform a comprehensive evaluation on both datasets using state-of-the-art MLLMs, rule-based systems, and fine-tuned classifiers. Our results reveal that the task remains highly challenging.
+            Misleading visualizations are a potent driver of misinformation on social media and the web. By violating chart design principles, they distort data and lead readers to draw inaccurate conclusions. Prior work has shown that both humans and multimodal large language models (MLLMs) are frequently deceived by such visualizations. Automatically detecting misleading visualizations and identifying the specific design rules they violate could help protect readers and reduce the spread of misinformation. However, the training and evaluation of AI models has been limited by the absence of large, diverse, and openly available datasets. In this work, we introduce Misviz, a benchmark of 2,604 real-world visualizations annotated with 12 types of misleaders. To support model training, we also release Misviz-synth, a synthetic dataset of 57,665 visualizations generated using Matplotlib and based on real-world data tables. We perform a comprehensive evaluation on both datasets using state-of-the-art MLLMs, rule-based systems, and fine-tuned classifiers. Our results reveal that the task remains highly challenging.
           </p>
         </div>
       </div>
@@ -203,7 +203,7 @@
         <h2 class="title is-3">Misviz and Misviz-synth</h2>
         <img src="static/images/example.png" width="70%"/>
         <h2 class="content has-text-justified">
-          We introduce two datasets. (1) Misviz-synth contains 81,814 synthetic visualizations generated with Matplotlib. It can be used to train models.
+          We introduce two datasets. (1) Misviz-synth contains 57,665 synthetic visualizations generated with Matplotlib. It can be used to train models.
           (2) Misviz contains 2,604 real-world visualizations collected from various websites. It is a challenging evaluation benchmark. The image above shows the following instance of Misviz:
           <pre><code>{
       "image_path": "img/68718369730_misrepresentation.png",
