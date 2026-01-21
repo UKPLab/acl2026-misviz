@@ -64,8 +64,7 @@ class MisvizSynthRawChartMisleaderDataset(Dataset):
     def __init__(
         self,
         dataset_path,
-        partition,
-        test_run=False,
+        partition
     ):
         self.dataset_path = dataset_path
         metadata_file_path = dataset_path + "/misviz_synth.json"
@@ -74,8 +73,6 @@ class MisvizSynthRawChartMisleaderDataset(Dataset):
         self.metadata_list = [
             entry for entry in self.metadata_list if partition in entry["split"]
         ]
-        if test_run:
-            self.metadata_list = self.metadata_list[:5]
         print(f"Loaded {len(self.metadata_list)} samples from partition {partition}")
 
     def __getitem__(self, idx):
@@ -149,8 +146,7 @@ class MisvizRawChartMisleaderDataset(Dataset):
     def __init__(
         self,
         dataset_path,
-        partition,
-        test_run=False
+        partition
     ):
         self.dataset_path = dataset_path
         metadata_file_path = dataset_path + "/misviz.json"
@@ -163,8 +159,6 @@ class MisvizRawChartMisleaderDataset(Dataset):
             for metadata_entry in self.metadata_list
             if metadata_entry["split"] == partition
         ]
-        if test_run:
-            self.metadata_list = self.metadata_list[:5]
         print(f"Loaded {len(self.metadata_list)} samples from partition {partition}")
 
     def __getitem__(self, idx):

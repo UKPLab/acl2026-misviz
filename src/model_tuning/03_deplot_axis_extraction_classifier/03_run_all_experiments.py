@@ -24,11 +24,10 @@ def collate_fn_misviz_synth(batch):
     return embeddings, labels, metadata
 
 
-def run_eval_for_misviz_synth_dataset(
+def run_eval_misviz_synth(
     model,
     val_loader,
     criterion,
-    class_weight_dict,
     label_to_idx,
     device,
 ):
@@ -73,45 +72,23 @@ def run_eval_for_misviz_synth_dataset(
     }
 
 
-def run_eval_for_misviz_dataset(
+def run_eval_misviz(
     model,
     val_dataset,
     criterion,
-    class_weight_dict,
+    label_to_idx,
     device,
 ):
     model.eval()
-    included_label_values_misviz = list(commons.label_mapping.values())
     all_predicted = []
     all_actuals = []
-    ood_predictions = []
-    ood_actuals = []
-    num_ood_predictions = 0
 
     with torch.no_grad():
         validation_loss_epoch = []
-        for embedding, true_labels, metadata in tqdm(val_dataset):
+        for embedding, true_labels, _ in tqdm(val_dataset):
             outputs = model(embedding.to(device))
             _, predicted = torch.max(outputs.data, 0)
-            if predicted.cpu().item() not in included_label_values_misviz:
-                num_ood_predictions += 1
-                ood_predictions.append(predicted.cpu().item())
-                true_label_indices_mask = torch.zeros_like(outputs.data).to(device)
-                for true_label in true_labels:
-                    true_label_indices_mask = torch.maximum(
-                        true_label_indices_mask, true_label.to(device)
-                    )
 
-                masked_values = outputs.data.clone()
-                masked_values[true_label_indices_mask != 1] = float("-inf")
-
-                max_index = torch.argmax(masked_values).item()
-                label_for_loss_compute = torch.zeros_like(outputs.data)
-                label_for_loss_compute[max_index] = 1
-
-                _, actual = torch.max(label_for_loss_compute, 0)
-                ood_actuals.append(actual.cpu().item())
-                continue
 
             predicted_label_in_true_label_index = -1
             for idx, true_label in enumerate(true_labels):
@@ -147,35 +124,29 @@ def run_eval_for_misviz_dataset(
                 )
                 _, actual = torch.max(label_for_loss_compute, 0)
 
-            # Append code for inverted axis if inverted x axis or y axis is predicted
             all_predicted.append(predicted.cpu().item())
             all_actuals.append(actual.cpu().item())
 
             validation_loss_epoch.append(loss.item())
         avg_validation_loss_epoch = np.array(validation_loss_epoch).mean()
 
-    sample_weights = np.array([class_weight_dict[int(label)] for label in all_actuals])
     evaluation_metrics_for_epoch = classification_report(
         all_actuals,
         all_predicted,
-        labels=list(commons.consolidated_labels_misviz.values()),
-        target_names=list(commons.consolidated_labels_misviz.keys()),
+        labels=list(label_to_idx.values()),
+        target_names=list(label_to_idx.keys()),
         output_dict=True,
         zero_division=0,
     )
     print(
         "Misviz avg F1 score: ", evaluation_metrics_for_epoch["macro avg"]["f1-score"]
     )
-    print("OOD rate misviz: ", (num_ood_predictions / len(val_dataset)) * 100)
     return {
         "avg_val_loss": avg_validation_loss_epoch,
         "imb_report": evaluation_metrics_for_epoch,
         "all_losses": validation_loss_epoch,
         "all_predicted": all_predicted,
         "all_actuals": all_actuals,
-        "ood_predictions": ood_predictions,
-        "ood_actuals": ood_actuals,
-        "ood_rate": num_ood_predictions / len(val_dataset),
     }
 
 
@@ -192,7 +163,7 @@ def run_training_for_model(
     patience,
     min_delta,
     hidden_dim,
-):
+    ):
     # Load model onto specified device
     device = utils.get_available_device()
     output_path = os.path.join(output_path, experiment_name)
@@ -223,32 +194,20 @@ def run_training_for_model(
     os.makedirs(os.path.join(output_path, "weights"), exist_ok=True)
 
     # Create class weights for f1 evaluation
-    misviz_labels = []
-    for metadata_entry in val_dataset_misviz.metadata:
-        if metadata_entry["misleader"]:
-            for misleader in metadata_entry["misleader"]:
-                misviz_labels.append(commons.label_mapping[misleader])
-        else:
-            misviz_labels = misviz_labels + ["no misleader"]
-    class_weights_misviz = compute_class_weight(
-        class_weight="balanced",
-        classes=np.array(list(commons.consolidated_labels_misviz.keys())),
-        y=misviz_labels,
-    )
-    class_weight_dict_misviz = dict(
-        zip(list(commons.consolidated_labels_misviz.values()), class_weights_misviz)
-    )
+
 
     # Create class weights for misviz_synth
-    labels = [metadata_entry["label"] for metadata_entry in train_dataset.metadata]
-
+    labels = [metadata_entry["misleader"][0] if len(metadata_entry["misleader"]) > 0 else "no misleader" for metadata_entry in train_dataset.metadata]
+    print(set(labels))
+    for k in label_to_idx.keys():
+        if k not in set(labels):
+            print(k)
     class_weights = compute_class_weight(
         class_weight="balanced",
         classes=np.array(list(label_to_idx.keys())),
         y=labels,
     )
 
-    class_weight_dict = dict(zip(list(label_to_idx.values()), class_weights))
 
     class_weights = torch.tensor(class_weights, dtype=torch.float).to(device)
     criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
@@ -266,6 +225,7 @@ def run_training_for_model(
         collate_fn=collate_fn_misviz_synth,
     )
 
+
     # Start of training
     model.to(device)
 
@@ -273,7 +233,6 @@ def run_training_for_model(
     all_metrics = []
     best_avg_f1_misviz_synth = 0
     best_avg_f1_misviz = 0
-
     early_stopping = utils.ValidationLossEarlyStopping(
         patience=patience, min_delta=min_delta
     )
@@ -305,53 +264,37 @@ def run_training_for_model(
         avg_training_loss_epoch = np.array(training_loss_epoch).mean()
 
         if epoch % 5 == 0 or epoch == epochs - 1:
-            eval_metrics_misviz_synth = run_eval_for_misviz_synth_dataset(
+            eval_metrics_misviz_synth = run_eval_misviz_synth(
                 model,
                 val_loader_misviz_synth,
                 criterion,
-                class_weight_dict,
                 label_to_idx,
-                device,
+                device
             )
-            eval_metrics_misviz = run_eval_for_misviz_dataset(
+            eval_metrics_misviz = run_eval_misviz(
                 model,
                 val_dataset_misviz,
                 criterion,
-                class_weight_dict_misviz,
-                device,
+                label_to_idx,
+                device
             )
             metrics_for_epoch = {
                 "epoch": epoch,
                 "misviz_synth_avg_training_loss": avg_training_loss_epoch,
                 "misviz_synth_val_metrics": eval_metrics_misviz_synth,
-                "misviz_val_metrics": eval_metrics_misviz,
+                "misviz_val_metrics": eval_metrics_misviz
             }
 
             all_metrics.append(metrics_for_epoch)
             print(f"Eval finished for {epoch}/{epochs}")
             avg_val_loss = eval_metrics_misviz_synth["avg_val_loss"]
             early_stopping_activated = early_stopping.early_stop_check(avg_val_loss)
-            avg_f1_score_misviz = eval_metrics_misviz["imb_report"]["macro avg"][
-                "f1-score"
-            ]
-            avg_f1_score_misviz_synth = eval_metrics_misviz_synth["imb_report"][
-                "macro avg"
-            ]["f1-score"]
-
-            if (
-                epoch > 30
-                or early_stopping_activated
-                or epoch == epochs - 1
-                or (
-                    avg_f1_score_misviz > best_avg_f1_misviz
-                    or avg_f1_score_misviz_synth > best_avg_f1_misviz_synth
-                )
-            ):
-                if avg_f1_score_misviz > best_avg_f1_misviz:
-                    best_avg_f1_misviz = avg_f1_score_misviz
-                if avg_f1_score_misviz_synth > best_avg_f1_misviz_synth:
-                    best_avg_f1_misviz_synth = avg_f1_score_misviz_synth
-
+            avg_f1_score_misviz_synth = eval_metrics_misviz_synth["imb_report"]["macro avg"]["f1-score"]
+            avg_f1_score_misviz = eval_metrics_misviz["imb_report"]["macro avg"]["f1-score"]
+            if avg_f1_score_misviz_synth > best_avg_f1_misviz_synth and avg_f1_score_misviz > best_avg_f1_misviz:
+                #Needs to improve F1 on both validation sets
+                best_avg_f1_misviz_synth = avg_f1_score_misviz_synth
+                best_avg_f1_misviz = avg_f1_score_misviz
                 torch.save(
                     {
                         "epoch": epoch,
@@ -360,7 +303,7 @@ def run_training_for_model(
                     os.path.join(
                         output_path,
                         "weights",
-                        f"finetuned_epoch_{epoch}.pth",
+                        f"best_model.pth",
                     ),
                 )
 
@@ -390,12 +333,21 @@ def run_all_train_experiments(
     hidden_dim,
 ):
     device = utils.get_available_device()
-    # Load the dataset
 
-    with open(
-        os.path.join(misviz_synth_path, "label_mapping.json"), "r"
-    ) as label_mapping_file:
-        label_to_idx = json.load(label_mapping_file)
+    label_to_idx = {'no misleader': 0,
+        'discretized continuous variable': 1,
+        'dual axis': 2,
+        'inappropriate axis range': 3, 
+        'inappropriate item order':  4,
+        'inappropriate use of line chart': 5,
+        'inappropriate use of pie chart': 6, 
+        'inconsistent binning size' : 7,
+        'inconsistent tick intervals': 8,
+        'inverted axis': 9,
+        'misrepresentation': 10, 
+        'truncated axis': 11,
+        '3d': 12
+    }
 
     seeds = [123, 456, 789]
     for experiment in experiment_types:
@@ -419,12 +371,11 @@ def run_all_train_experiments(
                         device,
                     )
                 )
-
                 val_dataset_misviz, _ = commons.prepare_datasets_misviz(
                     model,
                     precomp_path,
-                    output_prev_steps_path,
                     misviz_path,
+                    output_prev_steps_path,
                     experiment,
                     label_to_idx,
                     device,

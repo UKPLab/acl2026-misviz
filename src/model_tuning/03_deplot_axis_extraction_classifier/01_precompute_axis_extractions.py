@@ -37,8 +37,6 @@ def iterate_and_generate(
             padding=True,
         ).to(device)
 
-        # inputs = {k: v.to(model.dtype) for k, v in inputs.items()}
-
         predictions = model.generate(**inputs, max_new_tokens=1024, do_sample=False)
 
         decoded = processor.batch_decode(predictions, skip_special_tokens=True)
@@ -71,28 +69,28 @@ def main(model_path, misviz_synth_path, misviz_path, outputpath, split, device="
     test_dataset_misviz_synth = (
         torch_dataset_loader.MisvizSynthRawChartMisleaderDataset(
             dataset_path=misviz_synth_path,
-            partition="test",  #test_run=True
+            partition="test", 
         )
     )
     train_dataset_misviz_synth = (
         torch_dataset_loader.MisvizSynthRawChartMisleaderDataset(
             dataset_path=misviz_synth_path,
-            partition="train small", # test_run=True
+            partition="train_small",
         )
     )
     val_dataset_misviz_synth = torch_dataset_loader.MisvizSynthRawChartMisleaderDataset(
         dataset_path=misviz_synth_path,
-        partition="val",  #test_run=True
+        partition="val",  
     )
 
     val_dataset_misviz = torch_dataset_loader.MisvizRawChartMisleaderDataset(
         dataset_path=misviz_path,
-        partition="val",   #test_run=True
+        partition="val",   
     )
 
     test_dataset_misviz = torch_dataset_loader.MisvizRawChartMisleaderDataset(
         dataset_path=misviz_path,
-        partition="test",   #test_run=True
+        partition="test", 
     )
 
     model = model.merge_and_unload()

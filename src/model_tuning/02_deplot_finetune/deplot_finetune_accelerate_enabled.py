@@ -81,7 +81,6 @@ def main(
     experiment_name,
     outputpath,
     datasetpath,
-    axis_data_path,
     epochs,
     batch_size,
     checkpoint_path,
@@ -127,11 +126,6 @@ def main(
     with open(metadata_path, "r") as metadata_file:
         all_metadata = json.load(metadata_file)
 
-    additional_axis_metadata_path = os.path.join(axis_data_path, "metadata.json")
-    #The additional instances for axis extraction training
-    with open(additional_axis_metadata_path, "r") as axis_metadata_file:
-        axis_metadata = json.load(axis_metadata_file)
-
     # Load split index
     #split index for training val and test instances
     split_index = utils.extract_split_and_indices(all_metadata)
@@ -149,16 +143,8 @@ def main(
         if all_metadata[i]["axis_data_path"] != ""
     ]
 
-    train_val_ratio = len(train_metadata)/(len(train_metadata)+len(val_metadata))
-    cutoff = round(len(axis_metadata) * train_val_ratio)
-    print(f"Cutoff point between train and val for the additional axis metadata: {cutoff}")
-    axis_train_metadata = [axis_metadata[i] for i in range(0,cutoff)]
-    axis_val_metadata = [axis_metadata[i] for i in range(cutoff,len(axis_metadata))]
-
     # merge both datasets
-    train_metadata.extend(axis_train_metadata)
     np.random.shuffle(train_metadata)
-    val_metadata.extend(axis_val_metadata)
     np.random.shuffle(val_metadata)
     print('Training data size %s'%(len(train_metadata)))
     print('Validation data size %s'%(len(val_metadata)))
@@ -208,7 +194,6 @@ def main(
     # Prepare datasets and dataloaders
     train_dataset = ImageAxisDeplotDataset(
         dataset_folder_path=datasetpath,
-        additional_axis_data_folder_path=axis_data_path,
         metadata=train_metadata,
         processor=processor,
         augmentations=["rotation", "perspective"],
@@ -217,7 +202,6 @@ def main(
 
     val_dataset = ImageAxisDeplotDataset(
         dataset_folder_path=datasetpath,
-        additional_axis_data_folder_path=axis_data_path,
         metadata=val_metadata,
         processor=processor,
         augmentations=[],
@@ -397,18 +381,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--outputpath",
         type=str,
-        default="/src/model_tuning/03_deplot_finetune/output/",
+        default="/src/model_tuning/02_deplot_finetune/output/",
         help="Path at which the evaluation data and the model weigths will be saved to.",
     )
     parser.add_argument(
         "--datasetpath",
         type=str,
         help="Path at which the Misviz Synthetic dataset is located at.",
-    )
-    parser.add_argument(
-        "--axis_data_path",
-        type=str,
-        help="Path at which the additional axis metadata is located at. Root folder of the axis_variation dataset which can also be downloaded separately.",
     )
     parser.add_argument(
         "--epochs",
@@ -457,7 +436,6 @@ if __name__ == "__main__":
         args.experiment_name,
         args.outputpath,
         args.datasetpath,
-        args.axis_data_path,
         args.epochs,
         args.batch_size,
         args.checkpoint_path,

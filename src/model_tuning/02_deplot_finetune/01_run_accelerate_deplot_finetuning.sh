@@ -7,6 +7,7 @@
 #SBATCH --mail-user=your_mail
 #SBATCH --mem=64GB
 #SBATCH --gres=gpu:2
+#SBATCH --constraint="gpu_model:a180"
 
 ######################
 ### Set enviroment ###
@@ -16,12 +17,11 @@ conda activate lying_charts
 export GPUS_PER_NODE=2
 ######################
 
-export SCRIPT="misviz/src/model_tuning/02_deplot_finetune/deplot_finetune_accelerate_enabled.py"
+export SCRIPT="src/model_tuning/02_deplot_finetune/deplot_finetune_accelerate_enabled.py"
 export SCRIPT_ARGS=" \
     --experiment_name deplot_finetune_accelerate \
-    --outputpath misviz/data/deplot_finetune/output/ \
-    --datasetpath misviz/data/misviz_synth/ \
-    --axis_data_path misviz/data/misviz_synth/axis_variation/ \
+    --outputpath data/deplot_finetune/output/ \
+    --datasetpath data/misviz_synth/ \
     --epochs 4 \
     --batch_size 4 \
     --seq_length 1024 \

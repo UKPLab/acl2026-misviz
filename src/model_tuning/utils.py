@@ -45,66 +45,6 @@ class ClassifierHead(torch.nn.Module):
         return self.classifier(feature_vector)
 
 
-def plot_confusion_matrix(y_true, y_pred, class_names, output_folder, name_suffix=""):
-    cm = confusion_matrix(y_true, y_pred)
-
-    plt.figure(figsize=(10, 8))
-
-    sns.heatmap(
-        cm,
-        annot=True,
-        fmt="d",
-        cmap="Blues",
-        xticklabels=class_names,
-        yticklabels=class_names,
-    )
-
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    plt.title("Confusion Matrix")
-    plt.tight_layout()
-
-    plt.savefig(
-        os.path.join(
-            output_folder,
-            f"{name_suffix}confusion_matrix.png",
-        )
-    )
-
-
-def plot_losses(training_losses, validation_losses, output_path):
-    _, ax = plt.subplots(figsize=(10, 6))
-    x_coordinates = np.arange(len(training_losses))
-    ax.plot(x_coordinates, training_losses, label="Training Loss")
-    ax.plot(x_coordinates, validation_losses, label="Validation Loss")
-    ax.set_xlabel("# Iterations")
-    ax.set_ylabel("Loss")
-    ax.set_title("Loss per Iteration", wrap=True)
-    ax.legend()
-    plt.savefig(
-        os.path.join(
-            output_path,
-            "evaluation",
-            f"losses.png",
-        )
-    )
-
-
-def group_misclassifications(actual_labels, predicted_labels):
-    if len(actual_labels) != len(predicted_labels):
-        raise ValueError("The length of actual and predicted labels must be the same.")
-
-    misclassifications = {}
-
-    for actual, predicted in zip(actual_labels, predicted_labels):
-        if actual != predicted:
-            if predicted not in misclassifications:
-                misclassifications[predicted] = []
-            misclassifications[predicted].append(actual)
-
-    return misclassifications
-
-
 def get_available_device():
     if torch.cuda.is_available():
         return torch.device("cuda")

@@ -163,7 +163,7 @@ def compute_all_table_embeddings(data_path, output_path):
         "misviz_synth_test_data", misviz_synth_test_generations, output_path, device
     )
     compute_table_embeddings(
-        "misviz_synth_train_data",
+        "misviz_synth_train_small_data",
         misviz_synth_train_small_generations,
         output_path,
         device,

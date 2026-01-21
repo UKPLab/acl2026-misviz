@@ -15,10 +15,15 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
   <img width="70%" src="img/misviz_examples.png" alt="Real-world examples from the Misviz dataset" />
 </p>
 
+## News
+
+- January 2026: We released a new version of Misviz that contains bounding box coordinates for a subset of the misleaders
+- January 2026: We updated the preprint and released a new version of Misviz-synth that contains maps and scatterplots
+
 ## Abstract 
 
 > Misleading visualizations are a potent driver of misinformation on social media and the web. By violating chart design principles, they distort data and lead readers to draw inaccurate conclusions.  Prior work has shown that both humans and multimodal large language models (MLLMs) are frequently deceived by such visualizations. Automatically detecting misleading visualizations and identifying the specific design rules they violate could help protect readers and reduce the spread of misinformation. However, the training and evaluation of AI models has been limited by the absence of large, diverse, and openly available datasets.
-In this work, we introduce Misviz, a benchmark of 2,604 real-world visualizations annotated with 12 types of misleaders. To support model training, we also release Misviz-synth, a synthetic dataset of 81,814 visualizations generated using Matplotlib and based on real-world data tables. We perform a comprehensive evaluation on both datasets using state-of-the-art MLLMs, rule-based systems, and fine-tuned classifiers. Our results reveal that the task remains highly challenging.
+In this work, we introduce Misviz, a benchmark of 2,604 real-world visualizations annotated with 12 types of misleaders. To support model training, we also release Misviz-synth, a synthetic dataset of 51,665 visualizations generated using Matplotlib and based on real-world data tables. We perform a comprehensive evaluation on both datasets using state-of-the-art MLLMs, rule-based systems, and fine-tuned classifiers. Our results reveal that the task remains highly challenging.
 
 
 ## tl;dr 
@@ -53,7 +58,7 @@ We briefly describe the datasets below. More information can be found in the [RE
 ### Misviz-synth
 
 - *data/misviz_synth/misviz_synth.json* contains the task labels and metadata
-- The visualizations, the underlying data tables, and the axis metadata can be downloaded from [TUdatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/4782)
+- The visualizations, the underlying data tables, the code snippets, and the axis metadata can be downloaded from [TUdatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/4782)
 
 ### Misviz 
 
@@ -61,7 +66,7 @@ We briefly describe the datasets below. More information can be found in the [RE
 - The visualizations can be downloaded from the web using the following script
 
 ```python
-$ python data/download_misviz_images.py --use_wayback 0
+python data/download_misviz_images.py --use_wayback 0
 ```
 ### Misviz instance example
 
@@ -81,7 +86,8 @@ $ python data/download_misviz_images.py --use_wayback 0
           "misrepresentation"
       ],
       "wayback_image_url": "https://web.archive.org/web/20250619095605/https://64.media.tumblr.com/88844d8c3be687e0549e7b7c0a403293/tumblr_mx1as48rLr1sgh0voo1_1280.jpg",
-      "split": "test"
+      "split": "test",
+      "bbox": []
   }
 ```
 
@@ -102,7 +108,7 @@ $ pip install -r requirements.txt
 ### Evaluate zero-shot MLLMs
 
 ```python
-$ python src/mllm_inference/misleader_detection_MLLM.py --datasets misviz_synth-misviz --split test --model internvl3/8B/ --max_tokens 200
+python src/mllm_inference/misleader_detection_MLLM.py --datasets misviz_synth-misviz --split test --model internvl3/8B/ --max_tokens 200
 ```
 
 The ```--model``` argument expects a string in the format ```model_name/model_size/```. By default, the following models are available:
@@ -112,7 +118,7 @@ The ```--model``` argument expects a string in the format ```model_name/model_si
 | internvl3   |  8B, 38B, 78B | [Link](https://huggingface.co/collections/OpenGVLab/internvl3-67f7f690be79c2fe9d74fe9d) |
 | qwen2.5-vl      | 7B, 32B, 72B   | [Link](https://huggingface.co/collections/Qwen/qwen25-vl-6795ffac22b334a837c0f9a5)  |
 
-We also provide code to conduct experiments with GPT-4.1, GPT-o3, Gemini-1.5-flash, and Gemini-1.5-pro using the OpenAI API and the Google AI Studio. You will first need to obtain API keys from both providers and store them as environment variables.
+We also provide code to conduct experiments with GPT-4.1, GPT-o3, Gemini-2.5-flash-lite, using the OpenAI API and the Google AI Studio. You will first need to obtain API keys from both providers and store them as environment variables.
 
 ### Fine-tune DePlot for axis extraction and predict axis metadata
 
@@ -120,13 +126,13 @@ To apply the linter to Misviz and to train the classifiers, we need to extract a
 To fine-tune deplot, we provide a shell script which you can adjust to your needs.
 
 ```
-$ sbatch src/model_tuning/02_deplot_finetune/01_run_accelerate_deplot_finetuning.sh
+sbatch src/model_tuning/02_deplot_finetune/01_run_accelerate_deplot_finetuning.sh
 ```
 Once the model is fine-tuned, axes can be predicted for all splits of Misviz-synth and Misviz using the following two shell scripts, which you can again adjust to your needs.
 
 ```
-$ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/01_run_axis_prediction_precomp_split_0.sh
-$ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/01_run_axis_prediction_precomp_split_1.sh
+sbatch src/model_tuning/03_deplot_axis_extraction_classifier/01_run_axis_prediction_precomp_split_0.sh
+sbatch src/model_tuning/03_deplot_axis_extraction_classifier/01_run_axis_prediction_precomp_split_1.sh
 ```
 
 ### Rule-based linter
@@ -134,7 +140,7 @@ $ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/01_run_axis_predi
 The rule-based linter can be evaluated both on ground truth and predicted axis metadata for Misviz-synth, but only on predicted axis metadata for Misviz. 
 
 ```python
-$ python src/rule_based_linter/linter.py --datasets misviz_synth --split test --use_predicted_axis 0
+python src/rule_based_linter/linter.py --datasets misviz_synth --split test --use_predicted_axis 0
 ```
 
 ### Fine-tuned classifiers
@@ -150,14 +156,21 @@ $ sbatch src/model_tuning/01_precomputation/01_run_all_img_precomp.sh
 For axis metadata embeddings, run the following python script.
 
 ```python
-$ python src/model_tuning/03_deplot_axis_extraction_classifier/02_encode_tables.py
+$ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/02_encode_tables.sh
 ```
 
 Then, the classifiers can be trained as follows:
 
 ```python
-$ python src/model_tuning/03_deplot_axis_extraction_classifier/03_run_all_experiments.py
+$ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/03_run_all_experiments.sh
 ```
+
+To make inference with the trained classifiers, use the following script:
+
+```python
+$ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/04_inference.sh
+```
+
 
 ## Citation
 

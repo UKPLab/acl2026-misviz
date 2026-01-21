@@ -48,7 +48,6 @@ class MisvizSynthDataset(DatasetType):
         return "misviz_synth"
 
     def get_available_partitions(self):
-        # return ["train", "val", "test", "train small"]
         return ["val", "test", "train small"]
 
 

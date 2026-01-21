@@ -8,11 +8,6 @@ if root_folder not in sys.path:
     sys.path.insert(0, root_folder)
 import precomp_dataset
 
-with open(os.path.join("data", "misviz_synth/label_mapping.json"), "r") as f:
-    label_mapping = json.load(f)
-
-label_mapping_revert = {v: k for k, v in label_mapping.items()}
-
 
 def prepare_datasets_misviz_synth(
     model_name,
@@ -28,30 +23,16 @@ def prepare_datasets_misviz_synth(
         all_metadata = json.load(metadata_file)
 
     val_metadata = [entry for entry in all_metadata if "val" == entry["split"]]
-    train_metadata = [entry for entry in all_metadata if "train" in entry["split"]]
+    train_metadata = [entry for entry in all_metadata if "train_small" in entry["split"]]
     test_metadata = [entry for entry in all_metadata if "test" == entry["split"]]
 
-    indices_small_train_in_big_train_path = [
-        index
-        for index in range(len(train_metadata))
-        if "small" in train_metadata[index]["split"]
-    ]
+
     misviz_synth_precomp_path = precomp_path + "misviz_synth/"
-
-    # Load the indices of the small train set in the big train set
-    # Used to extract the correct indices from the precomputed embeddings for the original train set
-    with open(
-        indices_small_train_in_big_train_path, "r"
-    ) as indices_small_train_in_big_train_file:
-        indices_small_train_in_big_train = json.load(
-            indices_small_train_in_big_train_file
-        )
-
     train_data = torch.load(
         misviz_synth_precomp_path
         + f"train_misviz_synth_{model_name}_embedded_images.pt",
         map_location=torch.device(device),
-    )[indices_small_train_in_big_train]
+    )
     val_data = torch.load(
         misviz_synth_precomp_path + f"val_misviz_synth_{model_name}_embedded_images.pt",
         map_location=torch.device(device),
@@ -177,29 +158,6 @@ def prepare_datasets_misviz(
         misviz_precomp_path + f"test_misviz_{model_name}_embedded_images.pt",
         map_location=torch.device(device),
     )
-
-    # Need to filter out the discretized continuous variables from metadata and encoded images
-    # They are not present in the misviz_synth dataset, so the model can't be trained to detect them
-    test_indeces_to_keep = [
-        index
-        for index in range(len(test_metadata))
-        if "discretized continuous variable" not in test_metadata[index]["misleader"]
-        and "map" not in test_metadata[index]["chart_type"]
-        and "scatter plot" not in test_metadata[index]["chart_type"]
-        and "other" not in test_metadata[index]["chart_type"]
-    ]
-    val_indeces_to_keep = [
-        index
-        for index in range(len(val_metadata))
-        if "discretized continuous variable" not in val_metadata[index]["misleader"]
-        and "map" not in val_metadata[index]["chart_type"]
-        and "scatter plot" not in val_metadata[index]["chart_type"]
-        and "other" not in val_metadata[index]["chart_type"]
-    ]
-    test_metadata = [test_metadata[index] for index in test_indeces_to_keep]
-    val_metadata = [val_metadata[index] for index in val_indeces_to_keep]
-    val_data = val_data[val_indeces_to_keep]
-    test_data = test_data[test_indeces_to_keep]
 
     if dataset_type == "encoder_only":
 

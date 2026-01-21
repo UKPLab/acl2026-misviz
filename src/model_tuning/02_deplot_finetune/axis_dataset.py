@@ -52,7 +52,6 @@ class ImageAxisDeplotDataset(Dataset):
     def __init__(
         self,
         dataset_folder_path,
-        additional_axis_data_folder_path,
         metadata,
         processor,
         augmentations,
@@ -60,7 +59,6 @@ class ImageAxisDeplotDataset(Dataset):
     ):
         self.metadata = metadata
         self.dataset_folder_path = dataset_folder_path
-        self.additional_axis_data_path = additional_axis_data_folder_path
         self.dataset_visualization_folder = os.path.join(
             dataset_folder_path, "vis_output"
         )
@@ -80,11 +78,7 @@ class ImageAxisDeplotDataset(Dataset):
         relative_axis_info_path = metadata["axis_data_path"]
         relative_image_path = metadata["image_path"]
 
-        data_folder = ""
-        if "chosen_y_axis_scale" in metadata.keys():
-            data_folder = self.additional_axis_data_path
-        else:
-            data_folder = self.dataset_visualization_folder
+        data_folder = self.dataset_visualization_folder
 
         axis_file_path = (
             os.path.join(data_folder, relative_axis_info_path)
@@ -105,12 +99,13 @@ class ImageAxisDeplotDataset(Dataset):
             legacy=False,
         )
         model_inputs = {k: v.squeeze() for k, v in image_inputs.items()}
-        if axis_file_path:
-            axis_data = json.load(open(axis_file_path, "r"))
+        axis_data = json.load(open(axis_file_path, "r"))
+        if len(axis_data) > 0:
             deplot_table_axis = build_serialized_table_string(
-                axis_data,
+                axis_data
             )
         else:
+            #For pie charts and map, there is no axis data. encode NA instead.
             deplot_table_axis = "NA"
 
         deplot_table_axis_to_encode = deplot_style_preprocessing(deplot_table_axis)

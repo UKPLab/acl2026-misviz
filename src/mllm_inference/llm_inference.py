@@ -35,6 +35,7 @@ def generate_answer_qwen25vl(image_path, prompt, tokenizer, model, max_tokens=20
     response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)[0]   
     return response
 
+
 def generate_answer_qwen25vl_32B(image_path, prompt, tokenizer, model, max_tokens=200):
     dtype   = next(model.parameters()).dtype   # bfloat16 or float16
     device  = next(model.parameters()).device  
@@ -72,35 +73,40 @@ def generate_answer_internvl3_38B(image_path, prompt, tokenizer,  model, max_tok
 
 
 def generate_answer_gemini(image_path, prompt, tokenizer, model, max_tokens):
-    #Prepare input
-    if image_path:
-        with open(image_path, 'rb') as f:
-            img_bytes = f.read()
-        media_type, _ = mimetypes.guess_type(image_path)
-        if media_type is None:                  
-            media_type = "image/png"
-    content = (genai.types.Part.from_bytes(
-                data=img_bytes,
-                mime_type=media_type,
-                ), 
-                prompt
-            )
-    #Generate response
     try:
-        response = gemini_client.models.generate_content(contents= content, 
+        if image_path:
+            with open(image_path, 'rb') as f:
+                image_bytes = f.read()
+            media_type, _ = mimetypes.guess_type(image_path)
+            if media_type is None:                  
+                media_type = "image/png"
+
+            contents=[
+            genai.types.Part.from_bytes(
+                data=image_bytes,
+                mime_type=media_type,
+            ),
+            prompt
+            ]
+        else:
+            contents = prompt
+        #Generate response
+        config = genai.types.GenerateContentConfig(
+            temperature=0.0,
+            top_p=1.0,
+            top_k=1,
+            max_output_tokens=max_tokens,
+        )
+        response = gemini_client.models.generate_content(contents=contents, 
                                                         model= model,
-                                                config={
-                                                    "temperature": 0.0,
-                                                    "top_p": 1,
-                                                    "top_k": 1,
-                                                    "max_output_tokens": max_tokens
-                                                }
+                                                        config = config
                                                 )
         output = response.text
         usage_input = response.usage_metadata.prompt_token_count
         usage_output = response.usage_metadata.candidates_token_count
         usage = usage_input + usage_output
-    except:
+    except Exception as e:
+        print(e)
         output = ''
         usage = 0
     time.sleep(2)
