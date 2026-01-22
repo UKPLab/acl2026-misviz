@@ -7,7 +7,7 @@ The Misviz and Misviz-synth datasets are made available under a **CC-BY-SA-4.0**
 Misviz-synth contains 57,665 synthetic visualizations generated with Matplotlib. It is split into a train, validation, and test set.
 
 - *data/misviz_synth/misviz_synth.json* contains the task labels and metadata
-- The visualizations, the underlying data tables, the code, and the axis metadata can be downloaded from [TUdatalib](https://tudatalib.ulb.tu-darmstadt.de/items/21f65047-c4d8-45a2-a717-e76f63dd0c33)
+- The visualizations, the underlying data tables, the code, and the axis metadata can be downloaded from [TUdatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/5003)
 
 Each record contains the following items: 
 
