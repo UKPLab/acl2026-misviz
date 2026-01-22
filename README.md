@@ -58,7 +58,7 @@ We briefly describe the datasets below. More information can be found in the [RE
 ### Misviz-synth
 
 - *data/misviz_synth/misviz_synth.json* contains the task labels and metadata
-- The visualizations, the underlying data tables, the code snippets, and the axis metadata can be downloaded from [TUdatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/4782)
+- The visualizations, the underlying data tables, the code snippets, and the axis metadata can be downloaded from [TUdatalib](https://tudatalib.ulb.tu-darmstadt.de/items/21f65047-c4d8-45a2-a717-e76f63dd0c33)
 
 ### Misviz 
 
