@@ -163,13 +163,13 @@
       <h2 class="subtitle has-text-justified">
        😯 Misleading visualizations are a dangerous form of misinformation. They misrepresent data tables by breaking various chart design conventions. We need to develop methods to detect design issues in charts that make them misleading. <br>
         In this work, we introduce two datasets for the task of misleading visualization detection: Misviz and Misviz-synth. <br>
-        🤖 We evaluate three type of models on both datasets: zero-shot MLLMs, rule-based linters, and fine-tuned classifiers.
+        🤖 We evaluate three type of models on both datasets: zero-shot MLLMs, rule-based linters, and trained classifiers. 
       </h2>
       <img src="static/images/misviz_examples.png" height="60%"/>
       <!-- <h2 class="subtitle has-text-centered">Example tasks in <span style="font-weight:bold;">BLINK</span>.</h2> -->
       <h2 class="hero-body has-text-centered">
         <!-- <br> -->
-        The 12 categories of misleaders included in the Misviz dataset.
+        The 12 categories of misleaders included in the Misviz and Misviz-synth dataset.
       </h2>
     </div>
   </div>
@@ -185,7 +185,8 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Misleading visualizations are a potent driver of misinformation on social media and the web. By violating chart design principles, they distort data and lead readers to draw inaccurate conclusions. Prior work has shown that both humans and multimodal large language models (MLLMs) are frequently deceived by such visualizations. Automatically detecting misleading visualizations and identifying the specific design rules they violate could help protect readers and reduce the spread of misinformation. However, the training and evaluation of AI models has been limited by the absence of large, diverse, and openly available datasets. In this work, we introduce Misviz, a benchmark of 2,604 real-world visualizations annotated with 12 types of misleaders. To support model training, we also release Misviz-synth, a synthetic dataset of 57,665 visualizations generated using Matplotlib and based on real-world data tables. We perform a comprehensive evaluation on both datasets using state-of-the-art MLLMs, rule-based systems, and fine-tuned classifiers. Our results reveal that the task remains highly challenging.
+            Misleading visualizations are a potent driver of misinformation on social media and the web. By violating chart design principles, they distort data and lead readers to draw inaccurate conclusions.  Prior work has shown that both humans and multimodal large language models (MLLMs) are frequently deceived by such visualizations. Automatically detecting misleading visualizations and identifying the specific design rules they violate could help protect readers and reduce the spread of misinformation. However, the training and evaluation of AI models has been limited by the absence of large, diverse, and openly available datasets.
+In this work, we introduce Misviz, a benchmark of 2,604 real-world visualizations annotated with 12 types of misleaders. To support model training, we also create Misviz-synth, a synthetic dataset of 57,665 visualizations generated using Matplotlib and based on real-world data tables. We perform a comprehensive evaluation on both datasets using state-of-the-art MLLMs, rule-based systems, and image-axis classifiers. Our results reveal that the task remains highly challenging. We release Misviz, Misviz-synth, and the accompanying code.
           </p>
         </div>
       </div>
@@ -233,7 +234,7 @@
         <h2 class="title is-3">Models</h2>
         <img src="static/images/baselines.png" width="70%"/>
         <h2 class="content has-text-justified">
-          We consider three types of baselines: zero-shot MLLMs, rule-based linters, and fine-tuned classifiers. The latter two require to extract the axis metadata from the chart as an intermediate step.
+          We consider three types of baselines: zero-shot MLLMs, rule-based linters, and image-axis classifiers. The latter two require to extract the axis metadata from the chart as an intermediate step.
         </h2>
         
       </div>
@@ -249,7 +250,7 @@
         <h2 class="title is-3">Results</h2>
         <img src="static/images/results.png" width="70%"/>
         <h2 class="content has-text-justified">
-          💡Our experiment results reveal several key insights. (1) The task is challenging both on synthetic and real-world visualizations even for SOTA MLLMs. (2) Fine-tuned classifiers can generalize to some extent to real-world visualizations. (3) The axis extraction phase is very error prone on real-world visualizations.<br>
+          💡Our experiment results reveal several key insights. (1) The task is challenging both on synthetic and real-world visualizations even for SOTA MLLMs. (2) Image-axis classifiers can generalize to some extent to real-world visualizations. (3) The axis extraction phase is very error prone on real-world visualizations.<br>
           Learn more by reading our paper and stay tuned for future work!
         </h2>
         
