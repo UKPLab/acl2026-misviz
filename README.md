@@ -1,7 +1,7 @@
 # Is this chart lying to me? Automating the detection of misleading visualizations
 
 [![License](https://img.shields.io/github/license/UKPLab/ukp-project-template)](https://opensource.org/licenses/Apache-2.0)
-[![Python Versions](https://img.shields.io/badge/Python-3.9-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Python Versions](https://img.shields.io/badge/Python-3.10-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 
 This repository contains the datasets and code associated with the arXiv preprint: [Is this chart lying to me? Automating the detection of misleading visualizations](https://arxiv.org/abs/2508.21675). The Misviz and Misviz-synth datasets are released under a **CC-BY-SA 4.0** license. The code is released under an **Apache 2.0** license.
 
@@ -97,7 +97,7 @@ python data/download_misviz_images.py --use_wayback 0
 Follow these instructions to recreate the environment used for our experiments.
 
 ```
-$ conda create --name lying_charts python=3.9
+$ conda create --name lying_charts python=3.10
 $ conda activate lying_charts
 $ pip install -r requirements.txt
 ```
