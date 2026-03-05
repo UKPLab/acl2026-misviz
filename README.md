@@ -1,7 +1,7 @@
 # Is this chart lying to me? Automating the detection of misleading visualizations
 
 [![License](https://img.shields.io/github/license/UKPLab/ukp-project-template)](https://opensource.org/licenses/Apache-2.0)
-[![Python Versions](https://img.shields.io/badge/Python-3.9-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Python Versions](https://img.shields.io/badge/Python-3.10-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Python Versions](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/UKPLab/misviz)
 
 
@@ -104,7 +104,7 @@ python data/download_misviz_images.py --use_wayback 0
 Follow these instructions to recreate the environment used for our experiments.
 
 ```
-$ conda create --name lying_charts python=3.9
+$ conda create --name lying_charts python=3.10
 $ conda activate lying_charts
 $ pip install -r requirements.txt
 ```
@@ -125,7 +125,7 @@ The ```--model``` argument expects a string in the format ```model_name/model_si
 | internvl3   |  8B, 38B, 78B | [Link](https://huggingface.co/collections/OpenGVLab/internvl3-67f7f690be79c2fe9d74fe9d) |
 | qwen2.5-vl      | 7B, 32B, 72B   | [Link](https://huggingface.co/collections/Qwen/qwen25-vl-6795ffac22b334a837c0f9a5)  |
 
-We also provide code to conduct experiments with GPT-4.1, GPT-o3, Gemini-2.5-flash-lite, using the OpenAI API and the Google AI Studio. You will first need to obtain API keys from both providers and store them as environment variables.
+We also provide code to run experiments with GPT-4.1, GPT-o3, and Gemini-2.5-flash-lite using the OpenAI API and Google AI Studio. You will first need to obtain API keys from both providers and store them as environment variables.
 
 ### Fine-tune DePlot for axis extraction and predict axis metadata
 
@@ -152,7 +152,7 @@ python src/rule_based_linter/linter.py --datasets misviz_synth --split test --us
 
 ### Fine-tuned classifiers
 
-In order to train the classifiers, the embeddings of the visualization images and of the axis metadata can be pre-computed using TinyChart and TAPAS, respectively.
+To train the classifiers, the embeddings for the visualization images and the axis metadata can be precomputed using TinyChart and TAPAS, respectively.
 
 For image embeddings, adjust and run the following shell script:
 
@@ -160,7 +160,7 @@ For image embeddings, adjust and run the following shell script:
 $ sbatch src/model_tuning/01_precomputation/01_run_all_img_precomp.sh
 ```
 
-For axis metadata embeddings, run the following python script.
+For axis metadata embeddings, run the following Python script.
 
 ```python
 $ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/02_encode_tables.sh
@@ -172,7 +172,7 @@ Then, the classifiers can be trained as follows:
 $ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/03_run_all_experiments.sh
 ```
 
-To make inference with the trained classifiers, use the following script:
+To make inferences with the trained classifiers, use the following script:
 
 ```python
 $ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/04_inference.sh
