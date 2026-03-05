@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/github/license/UKPLab/ukp-project-template)](https://opensource.org/licenses/Apache-2.0)
 [![Python Versions](https://img.shields.io/badge/Python-3.9-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Python Versions](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/UKPLab/misviz)
+
 
 This repository contains the datasets and code associated with the arXiv preprint: [Is this chart lying to me? Automating the detection of misleading visualizations](https://arxiv.org/abs/2508.21675). The Misviz and Misviz-synth datasets are released under a **CC-BY-SA 4.0** license. The code is released under an **Apache 2.0** license.
 
@@ -17,6 +19,8 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
 
 ## News
 
+- March 2026: Misviz is now available on [HuggingFace](https://huggingface.co/datasets/UKPLab/misviz)
+- February 2026: Check out our new paper on misleading visualizations: [ChartAttack](https://arxiv.org/abs/2601.12983)
 - January 2026: We released a new version of Misviz that contains bounding box coordinates for a subset of the misleaders
 - January 2026: We updated the preprint and released a new version of Misviz-synth that contains maps and scatterplots
 
@@ -63,11 +67,14 @@ We briefly describe the datasets below. More information can be found in the [RE
 ### Misviz 
 
 - *data/misviz/misviz.json* contains the task labels and metadata
-- The visualizations can be downloaded from the web using the following script
+- The visualizations can be downloaded from the web using the following script. Please contact the authors if you face any issue downloading the images.
 
 ```python
 python data/download_misviz_images.py --use_wayback 0
 ```
+
+- The dataset can also be accessed on [HuggingFace](https://huggingface.co/datasets/UKPLab/misviz). However, please note that the code is designed for the json version of the dataset available in this repo.
+
 ### Misviz instance example
 
 <p align="center">
