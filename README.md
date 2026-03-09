@@ -67,13 +67,13 @@ We briefly describe the datasets below. More information can be found in the [RE
 ### Misviz 
 
 - *data/misviz/misviz.json* contains the task labels and metadata
-- The visualizations can be downloaded from the web using the following script. Please contact the authors if you face any issue downloading the images.
+- The visualizations can be downloaded from the web using the following script. Please contact the authors if you face any issues downloading the images.
 
 ```python
 python data/download_misviz_images.py --use_wayback 0
 ```
 
-- The dataset can also be accessed on [HuggingFace](https://huggingface.co/datasets/UKPLab/misviz). However, please note that the code is designed for the json version of the dataset available in this repo.
+- The dataset can also be accessed on [HuggingFace](https://huggingface.co/datasets/UKPLab/misviz). However, please keep in mind that the experiment code is designed for the JSON version of the dataset available in this repo.
 
 ### Misviz instance example
 
