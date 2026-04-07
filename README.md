@@ -19,6 +19,7 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
 
 ## News
 
+- April 2026: Our paper has been accepted to ACL 2026 Main conference 🔥 See you in San Diego 🌊
 - March 2026: Misviz is now available on [HuggingFace](https://huggingface.co/datasets/UKPLab/misviz)
 - February 2026: Check out our new paper on misleading visualizations: [ChartAttack](https://arxiv.org/abs/2601.12983)
 - January 2026: We released a new version of Misviz that contains bounding box coordinates for a subset of the misleaders
