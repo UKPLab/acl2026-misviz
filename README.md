@@ -5,7 +5,7 @@
 [![HuggingFace Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/UKPLab/misviz)
 
 
-This repository contains the datasets and code associated with the arXiv preprint: [Is this chart lying to me? Automating the detection of misleading visualizations](https://arxiv.org/abs/2508.21675). The Misviz and Misviz-synth datasets are released under a **CC-BY-SA 4.0** license. The code is released under an **Apache 2.0** license.
+This repository contains the datasets and code associated with the ACL 2026 Main conference paper: [Is this chart lying to me? Automating the detection of misleading visualizations](https://arxiv.org/abs/2508.21675). The Misviz and Misviz-synth datasets are released under a **CC-BY-SA 4.0** license. The code is released under an **Apache 2.0** license.
 
 Contact person: [Jonathan Tonglet](mailto:jonathan.tonglet@tu-darmstadt.de) 
 
