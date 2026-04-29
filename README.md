@@ -185,16 +185,15 @@ $ sbatch src/model_tuning/03_deplot_axis_extraction_classifier/04_inference.sh
 If you find this work relevant to your research or use this code in your work, please cite our paper as follows:
 
 ```bibtex 
-@article{tonglet2025misviz,
+@inproceedings{tonglet2026misviz,
   title={Is this chart lying to me? Automating the detection of misleading visualizations},
   author={Tonglet, Jonathan and Zimny, Jan and Tuytelaars, Tinne and Gurevych, Iryna},
-  journal={arXiv preprint arXiv:2508.21675},
-  year={2025},
+  booktitle={The 64th Annual Meeting of the Association for Computational Linguistics},
+  year={2026},
   url={https://arxiv.org/abs/2508.21675},
   doi={10.48550/arXiv.2508.21675}
 }
 ```
-
 
 ## Disclaimer
 
